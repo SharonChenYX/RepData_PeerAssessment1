@@ -7,19 +7,83 @@ output:
 
 
 ## Loading and preprocessing the data
-
+D <- read.csv("activity.csv")
 
 
 ## What is mean total number of steps taken per day?
-
+#aggregate steps by date from D
+steps_day <- aggregate(steps ~ date, D, sum)
+#make histogram
+hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
+     col="red", xlab = "Number of Stpes")
+#mean of steps
+steps_mean <- mean(steps_day$steps)
+#median of steps
+steps_median <- median(steps_day$steps)
 
 
 ## What is the average daily activity pattern?
-
+#aggregatae steps by interval
+daily <- aggregate(steps ~ interval, D, mean)
+#plot
+plot(x=daily$interval, y=daily$steps,
+     main= "Average Daily Activity Pattern", xlab = "Interval", ylab="Number of Steps",
+     type="l")
+#find maximum steps
+daily_max <- daily[which.max(daily$steps),]$interval
 
 
 ## Imputing missing values
-
+#locate and the number of missing values  
+missing <- which(is.na(D$steps))
+Nmissing <- length(missing)
+#create a new dataset D2 to replace missing values with 0
+D2 <- D
+D2[missing,]$steps <- 0
+#repeat step3 with D2
+daily2 <- aggregate(steps ~ interval, D2, mean)
+#plot
+plot(x=daily2$interval, y=daily2$steps,
+     main= "Average Daily Activity Pattern2", xlab = "Interval", ylab="Number of Steps",
+     type="l")
+#replcae 0 with mean of that interval from all days
+for (mm in 1:Nmissing){
+  this_interval <- D2[mm,]$interval
+  this_mean <- daily2[which(daily2$interval==this_interval),]$steps
+  D2[mm,]$steps <- this_mean
+}
+#repeat step2 with D3
+steps_day2 <- aggregate(steps ~ date, D2, sum)
+hist(steps_day2$steps,main="Total Number of Steps Taken Per Day",
+     col="blue", xlab = "Number of Stpes")
+steps2_mean <- mean(steps_day2$steps)
+steps2_median <- median(steps_day2$steps)
+#difference between steps_day and steps_day2
+hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
+     col="red", xlab = "Number of Stpes",add=T)
+legend("topright",c("Imputed","Non-Imputed"),col=c("blue","red"),lwd=7)
+diffmean <- steps2_mean - steps_mean
+diffmedian <- steps2_median - steps_median
+difftotal <- sum(daily2$steps) - sum(daily$steps)
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday")
+#add variable of weekdays/ weekends
+D3 <- data.frame(D2,day=0)
+for (dd in 1:length(D3$day)){
+  dayhere <- as.character(weekdays(as.Date(D3[dd,]$date)))
+  if (length(which(dayhere==weekdays))==1){
+    D3[dd,]$day <- "weekday"
+  }
+  else if (length(which(dayhere==weekdays))==0){
+    D3[dd,]$day <- "weekend"
+  }
+}
+#aggregate setps by interval and day
+daily3 <- aggregate(steps ~ interval + day, D3,mean)
+#compare weekdays and weekends in one plot via lattcie of R
+library(lattice)
+xyplot(daily3$steps ~ daily3$interval|daily3$day, 
+       main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",
+       layout=c(1,2), type="l")
