@@ -1,11 +1,10 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "PA1_template"
 output: 
-  html_document:
-    keep_md: true
+  html_document: 
+    fig_caption: yes
+    keep_md: yes
 ---
-
-
 ## Load data from csv file
 ```{r echo = TRUE}
 D <- read.csv("activity.csv")
@@ -24,10 +23,12 @@ hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
 ### mean of steps
 ```{r echo = TRUE}
 steps_mean <- mean(steps_day$steps)
+steps_mean
 ```
 ### median of steps
 ```{r echo = TRUE}
 steps_median <- median(steps_day$steps)
+steps_median
 ```
 
 ## Calculate the average daily activity pattern
@@ -80,17 +81,30 @@ for (mm in 1:Nmissing){
 steps_day2 <- aggregate(steps ~ date, D2, sum)
 hist(steps_day2$steps,main="Total Number of Steps Taken Per Day",
      col="blue", xlab = "Number of Stpes")
+```
+
+```{r echo = TRUE}
 steps2_mean <- mean(steps_day2$steps)
+steps2_mean
 steps2_median <- median(steps_day2$steps)
+steps2_median
 ```
 ### difference between steps_day and steps_day2
 ```{r echo = TRUE}
+hist(steps_day2$steps,main="Total Number of Steps Taken Per Day",
+     col="blue", xlab = "Number of Stpes")
 hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
      col="red", xlab = "Number of Stpes",add=T)
 legend("topright",c("Imputed","Non-Imputed"),col=c("blue","red"),lwd=7)
+```
+
+```{r echo = TRUE}
 diffmean <- steps2_mean - steps_mean
+diffmean
 diffmedian <- steps2_median - steps_median
+diffmedian
 difftotal <- sum(daily2$steps) - sum(daily$steps)
+difftotal
 ```
 
 ## Compute differneces in activity patterns between weekdays and weekends
@@ -121,3 +135,4 @@ xyplot(daily3$steps ~ daily3$interval|daily3$day,
        main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",
        layout=c(1,2), type="l")
 ```
+
