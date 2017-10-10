@@ -7,68 +7,68 @@ output:
 
 
 ##Load data from csv file
-```{r}
+```{r echo = TRUE}
 D <- read.csv("activity.csv")
 ```
 
 ##Calculate the total number of steps taken per day
 aggregate steps by date from D
-```{r}
+```{r echo = TRUE}
 steps_day <- aggregate(steps ~ date, D, sum)
 ```
 make histogram
-```{r}
+```{r echo = TRUE}
 hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
      col="red", xlab = "Number of Stpes")
 ```
 mean of steps
-```{r}
+```{r echo = TRUE}
 steps_mean <- mean(steps_day$steps)
 ```
 median of steps
-```{r}
+```{r echo = TRUE}
 steps_median <- median(steps_day$steps)
 ```
 
 ##Calculate the average daily activity pattern
 aggregatae steps by interval
-```{r}
+```{r echo = TRUE}
 daily <- aggregate(steps ~ interval, D, mean)
 ```
 plot
-```{r}
+```{r echo = TRUE}
 plot(x=daily$interval, y=daily$steps,
      main= "Average Daily Activity Pattern", xlab = "Interval", ylab="Number of Steps",
      type="l")
 ```
 find maximum steps
-```{r}
+```{r echo = TRUE}
 daily_max <- daily[which.max(daily$steps),]$interval
 ```
 
 ##Imputing missing values. Compare inputed to non-imputed data
 locate and the number of missing values 
-```{r}
+```{r echo = TRUE}
 missing <- which(is.na(D$steps))
 Nmissing <- length(missing)
 ```
 create a new dataset D2 to replace missing values with 0
-```{r}
+```{r echo = TRUE}
 D2 <- D
 D2[missing,]$steps <- 0
 ```
 repeat step3 with D2
-```{r}
+```{r echo = TRUE}
 daily2 <- aggregate(steps ~ interval, D2, mean)
 ```
 plot
-```{r}
+```{r echo = TRUE}
 plot(x=daily2$interval, y=daily2$steps,
      main= "Average Daily Activity Pattern2", xlab = "Interval", ylab="Number of Steps",
      type="l")
 ```
 replcae 0 with mean of that interval from all days
-```{r}
+```{r echo = TRUE}
 for (mm in 1:Nmissing){
   this_interval <- D2[mm,]$interval
   this_mean <- daily2[which(daily2$interval==this_interval),]$steps
@@ -76,7 +76,7 @@ for (mm in 1:Nmissing){
 }
 ```
 repeat step2 with D3
-```{r}
+```{r echo = TRUE}
 steps_day2 <- aggregate(steps ~ date, D2, sum)
 hist(steps_day2$steps,main="Total Number of Steps Taken Per Day",
      col="blue", xlab = "Number of Stpes")
@@ -84,7 +84,7 @@ steps2_mean <- mean(steps_day2$steps)
 steps2_median <- median(steps_day2$steps)
 ```
 difference between steps_day and steps_day2
-```{r}
+```{r echo = TRUE}
 hist(steps_day$steps,main="Total Number of Steps Taken Per Day",
      col="red", xlab = "Number of Stpes",add=T)
 legend("topright",c("Imputed","Non-Imputed"),col=c("blue","red"),lwd=7)
@@ -94,11 +94,11 @@ difftotal <- sum(daily2$steps) - sum(daily$steps)
 ```
 
 ##Compute differneces in activity patterns between weekdays and weekends
-```{r}
+```{r echo = TRUE}
 weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday")
 ```
 add variable of weekdays/ weekends
-```{r}
+```{r echo = TRUE}
 D3 <- data.frame(D2,day=0)
 for (dd in 1:length(D3$day)){
   dayhere <- as.character(weekdays(as.Date(D3[dd,]$date)))
@@ -111,11 +111,11 @@ for (dd in 1:length(D3$day)){
 }
 ```
 aggregate setps by interval and day
-```{r}
+```{r echo = TRUE}
 daily3 <- aggregate(steps ~ interval + day, D3,mean)
 ```
 compare weekdays and weekends in one plot via lattcie of R
-```{r}
+```{r echo = TRUE}
 library(lattice)
 xyplot(daily3$steps ~ daily3$interval|daily3$day, 
        main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",
